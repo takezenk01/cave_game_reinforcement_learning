@@ -36,22 +36,40 @@
 | 環境 | バージョン / 備考 |
 |------|--------------------|
 | OS | Windows 10 / 11|
-| Python | 3.10以上 |
+| Python | 3.11以上 |
 | GPU | CUDA 12.1 (任意。CPUでも動作可) |
 | Pygame | 2.5.2 以上 |
 | Stable-Baselines3 | 2.3.0 |
 
 ---
 
-## インストール手順
+## インストール手順（Windowsを想定しています）
+### 1.Pythonのインストール
 
-### 1. クローン or ダウンロード
+公式サイトにアクセス
+🔗 https://www.python.org/downloads/windows/
+
+「Download Windows installer (64-bit)」をクリック
+
+インストーラ起動時に必ずチェックしてください。
+「Add Python to PATH」
+
+そのまま「Install Now」で完了。
+
+確認方法：
+```bash
+python --version
+```
+
+Python 3.1×.x と表示されればOK。
+
+### 2. クローン or ダウンロード
 ```bash
 git clone https://github.com/takezenk01/cave_game_reinforcement_learning.git
 cd cave_game_reinforcement_learning/cave_game
 ```
 
-### 2. 依存パッケージのインストール
+### 3. 依存パッケージのインストール
 ```bash
 pip install -r requirements.txt
 ```
