@@ -56,26 +56,23 @@ cd cave_game_reinforcement_learning/cave_game
 pip install -r requirements.txt
 ```
 
-## 起動方法（洞窟ゲーム）
-### 1. 学習フェーズ（PPO強化学習）
+---
+
+## 起動方法
+### 1. 洞窟ゲーム手動プレイ
+```bash
+python cave_game.py
+```
+
+ゲーム終了時は、画面右上の×をクリックしてください。
+
+### 2. 学習フェーズ（PPO強化学習）
 ```bash
 python cave_game_reinforcement_learning.py --train --timesteps 300000
 ```
 学習結果は ppo_cave_key.zip に保存されます。
 
-### 2. 実プレイ（元ゲームをAIが操作）
-```bash
-python cave_game_reinforcement_learning.py --play --game_module cave_game --seconds 300
-```
-
-## 起動方法（AI自動プレイ）
-### 1. 学習フェーズ（PPO強化学習）
-```bash
-python cave_game_reinforcement_learning.py --train --timesteps 300000
-```
-学習結果は ppo_cave_key.zip に保存されます。
-
-### 2. 実プレイ（元ゲームをAIが操作）
+### 3. 実プレイ（元ゲームをAIが操作）
 ```bash
 python cave_game_reinforcement_learning.py --play --game_module cave_game --seconds 300
 ```
