@@ -28,28 +28,17 @@
 
 | 環境 | バージョン / 備考 |
 |------|--------------------|
-| OS | Windows 10 / 11, Ubuntu 22.04, Google Colab |
-| Python | 3.10 / 3.11 |
+| OS | Windows 10 / 11|
+| Python | 3.13 |
 | GPU | CUDA 12.1 (任意。CPUでも動作可) |
-| PyTorch | 2.2.0 以上 |
 | Pygame | 2.5.2 以上 |
 | Stable-Baselines3 | 2.3.0 |
 
-# 概要
-既存のゲームを、強化学習（PPO）エージェントが疑似キーボード入力で自動プレイするツールです。
-他のプラットフォームで開発されたゲームを、強化学習で学習させたエージェントで自動プレイさせたいと思い開発しました。
+---
 
-学習は描画レスシミュレーション環境で高速化し、実動作は本物のゲームに対して**KEYDOWN(K_SPACE)**を疑似入力して操作します。
+## ⚙️ インストール手順
 
-## Why this matters for Morikatron
-- **無改造で自動化**：既存ゲームへ侵襲せず AI を適用 → **開発/QA 向け AI ツール**に直結。  
-- **高速学習→本番適用**：ShadowSim で素早く学習し、本番は元ゲームにキー注入で運用。  
-- **QA拡張性**：スコア・生存時間・ステージ進行の自動収集、失敗パターンの再現/回帰テストまで拡張可能。
-
-## Quick Start
+### 1️⃣ クローン or ダウンロード
 ```bash
-pip install "stable-baselines3[extra]==2.3.0" gymnasium pygame
-# 学習（描画なし）
-python rl_keyboard_wrapper.py --train --timesteps 300000
-# 自動プレイ（元ゲームは cave_orig.py の main() を無改造で起動）
-python rl_keyboard_wrapper.py --play --game_module cave_orig --model ppo_cave_key.zip --seconds 90
+git clone https://github.com/<yourname>/cave-rl-portfolio.git
+cd cave-rl-portfolio
