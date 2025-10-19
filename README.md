@@ -16,12 +16,24 @@
   **特徴**
   | 機能 | 説明 |
   |------|------|
-  | 元ゲーム(`cave_game.py`)を一切変更せず、外部から操作 |
-  | 🧠 高速学習 | 物理挙動を再現する`ShadowSim`で描画レス学習（PPO） |
-  | ⌨️ 疑似キーボード | `pygame.event.get()`をフックして自動で`KEYDOWN(K_SPACE)`を注入 |
-  | 🧩 同期制御 | `pygame.display.update()`後に内部シミュレータを1フレーム進め、動作同期 |
-  | 💡 安定設計 | 画像がなくても動作（`ship.png`/`bang.png`自動代替） |
-  | 🔧 拡張性 | 動画保存・TensorBoard・CNN観測などに容易に発展可能 |
+  | 既存ゲーム対応可能 | 応元ゲーム(`cave_game.py`)を一切変更せず、外部から操作可能 |
+  | 高速学習 | 物理挙動を再現する`Simulation`で描画レス学習（PPO） |
+  | 疑似キーボード | `pygame.event.get()`をフックして自動で`KEYDOWN(K_SPACE)`を認識 |
+  | 同期制御 | `pygame.display.update()`後に内部シミュレータを1フレーム進め、動作同期 |
+  | 拡張性 | 動画保存・TensorBoard・CNN観測などに容易に発展可能 |
+
+  ---
+
+## 🧱 動作確認環境
+
+| 環境 | バージョン / 備考 |
+|------|--------------------|
+| OS | Windows 10 / 11, Ubuntu 22.04, Google Colab |
+| Python | 3.10 / 3.11 |
+| GPU | CUDA 12.1 (任意。CPUでも動作可) |
+| PyTorch | 2.2.0 以上 |
+| Pygame | 2.5.2 以上 |
+| Stable-Baselines3 | 2.3.0 |
 
 # 概要
 既存のゲームを、強化学習（PPO）エージェントが疑似キーボード入力で自動プレイするツールです。
