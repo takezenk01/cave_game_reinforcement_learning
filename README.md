@@ -60,3 +60,13 @@ python cave_game_reinforcement_learning.py --train --timesteps 300000
 ```bash
 python cave_game_reinforcement_learning.py --play --game_module cave_game --seconds 300
 ```
+
+### 学習アルゴリズム概要（PPO）
+Policy Gradient (Actor-Critic) による方策最適化。
+状態空間：[ship_y, velocity, hole_top, hole_bottom, slope]
+行動空間：2（押す / 押さない）
+報酬設計：
+生存: +0.1
+穴の中心に近いほど: +(1 - dist) × 0.002
+衝突時: -1.0
+これにより、「中心を維持しながら生存時間を伸ばす」行動を自律的に学習します。
