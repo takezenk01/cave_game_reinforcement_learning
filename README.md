@@ -40,8 +40,8 @@
 
 ### 1. クローン or ダウンロード
 ```bash
-git clone https://github.com/<yourname>/cave-rl-portfolio.git
-cd cave-rl-portfolio
+git clone https://github.com/takezenk01/cave_game_reinforcement_learning.git
+cd cave_game_reinforcement_learning/cave_game
 ```
 
 ### 2. 依存パッケージのインストール
