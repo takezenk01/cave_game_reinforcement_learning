@@ -43,6 +43,19 @@
 
 ---
 
+## ファイル構成
+```bash
+/cave-game/
+├─ cave_game.py             # 元の洞窟ゲーム
+├─ cave_game_reinforcement_learning.py   # 強化学習＋キーエミュレーション
+├─ requirements.txt         # 依存パッケージ
+├─ bang.png         # 衝突画像ファイル
+├─ ship.png         # 宇宙船画像ファイル
+└─ autoplay_demo.mp4        # 自動プレイ動画サンプル
+```
+
+---
+
 ## インストール手順（Windowsを想定しています）
 ### 1.Pythonのインストール
 
