@@ -64,7 +64,7 @@ python cave_game_reinforcement_learning.py --play --game_module cave_game --seco
 ### 学習アルゴリズム概要（PPO）
 Policy Gradient (Actor-Critic) による方策最適化。<br>
 状態空間：[ship_y, velocity, hole_top, hole_bottom, slope]<br>
-行動空間：2（押す / 押さない）<br>
+行動空間：2（スペースキーを押す / 押さない）<br>
 報酬設計：<br>
  - 生存: +0.1<br>
  - 穴の中心に近いほど: +(1 - dist) × 0.002<br>
