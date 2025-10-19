@@ -62,7 +62,9 @@ python cave_game_reinforcement_learning.py --play --game_module cave_game --seco
 ```
 
 ### ファイル構成
+```bash
 /cave_game_reinforcement_learning/
 ├─ requirements.txt         # 必要パッケージ一覧
 ├─ cave_game.py             # 元ゲーム
 └─ cave_game_reinforcement_learning.py   # 強化学習 & キーエミュレーション本体
+```
