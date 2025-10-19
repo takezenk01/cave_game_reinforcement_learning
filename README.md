@@ -24,6 +24,12 @@
 
   ---
 
+## 洞窟ゲームとは？
+洞窟の中を宇宙船が、壁に衝突せずに、どれだけの距離を移動できるかを競うゲームです。<br>
+壁は、長い距離を進むにつれて狭くなっていきます。<br>
+宇宙船は、何も押さない状態だと自動で降下しますので、スペースキーを押して上昇させてください。
+
+
 ## 動作確認環境
 
 | 環境 | バージョン / 備考 |
@@ -49,7 +55,19 @@ cd cave_game_reinforcement_learning/cave_game
 pip install -r requirements.txt
 ```
 
-## 起動方法
+## 起動方法（洞窟ゲーム）
+### 1. 学習フェーズ（PPO強化学習）
+```bash
+python cave_game_reinforcement_learning.py --train --timesteps 300000
+```
+学習結果は ppo_cave_key.zip に保存されます。
+
+### 2. 実プレイ（元ゲームをAIが操作）
+```bash
+python cave_game_reinforcement_learning.py --play --game_module cave_game --seconds 300
+```
+
+## 起動方法（AI自動プレイ）
 ### 1. 学習フェーズ（PPO強化学習）
 ```bash
 python cave_game_reinforcement_learning.py --train --timesteps 300000
