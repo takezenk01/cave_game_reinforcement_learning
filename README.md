@@ -66,7 +66,7 @@ Policy Gradient (Actor-Critic) による方策最適化。<br>
 状態空間：[ship_y, velocity, hole_top, hole_bottom, slope]<br>
 行動空間：2（押す / 押さない）<br>
 報酬設計：<br>
--生存: +0.1<br>
--穴の中心に近いほど: +(1 - dist) × 0.002<br>
--衝突時: -1.0<br>
+ - 生存: +0.1<br>
+ - 穴の中心に近いほど: +(1 - dist) × 0.002<br>
+ - 衝突時: -1.0<br>
 これにより、「中心を維持しながら生存時間を伸ばす」行動を自律的に学習します。
