@@ -1,7 +1,7 @@
 # 洞窟ゲーム自動プレイ
 
 既存のゲームを強化学習エージェントが、疑似キーボード操作で自動プレイを行うシステムです。  
-ゲームAI研究・QA自動化・開発支援に活用できるような、AIプレイヤーを目指して簡単にですが作成しました。
+ゲームAI研究・QA自動化・開発支援に活用できるような、AIを目指して、作成しました。
 
 ---
 
@@ -29,16 +29,40 @@
 | 環境 | バージョン / 備考 |
 |------|--------------------|
 | OS | Windows 10 / 11|
-| Python | 3.13 |
+| Python | 3.10以上 |
 | GPU | CUDA 12.1 (任意。CPUでも動作可) |
 | Pygame | 2.5.2 以上 |
 | Stable-Baselines3 | 2.3.0 |
 
 ---
 
-## ⚙️ インストール手順
+## インストール手順
 
-### 1️⃣ クローン or ダウンロード
+### 1. クローン or ダウンロード
 ```bash
 git clone https://github.com/<yourname>/cave-rl-portfolio.git
 cd cave-rl-portfolio
+```
+
+### 2. 依存パッケージのインストール
+```bash
+pip install -r requirements.txt
+```
+
+## 起動方法
+### 1. 学習フェーズ（PPO強化学習）
+```bash
+python cave_game_reinforcement_learning.py --train --timesteps 300000
+```
+学習結果は ppo_cave_key.zip に保存されます。
+
+### 2. 実プレイ（元ゲームをAIが操作）
+```bash
+python cave_game_reinforcement_learning.py --play --game_module cave_game --seconds 300
+```
+
+### ファイル構成
+/cave_game_reinforcement_learning/
+├─ requirements.txt         # 必要パッケージ一覧
+├─ cave_game.py             # 元ゲーム
+└─ cave_game_reinforcement_learning.py   # 強化学習 & キーエミュレーション本体
