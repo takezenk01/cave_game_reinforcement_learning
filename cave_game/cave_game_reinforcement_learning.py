@@ -32,10 +32,9 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecMonitor
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnNoModelImprovement
 
-# -----------------------------------------------------------------------------
-# 0) 画像読み込みのフェイルセーフ:
+# =======================================================================
 #    環境に ship.png / bang.png が無くても止まらないよう、単色Surfaceで代替。
-# -----------------------------------------------------------------------------
+# =======================================================================
 _real_img_load = pygame.image.load
 def _safe_image_load(path):
     try:
@@ -56,35 +55,36 @@ def _safe_image_load(path):
             return surf.convert()
 pygame.image.load = _safe_image_load
 
-# -----------------------------------------------------------------------------
+# =================================================================
 # 1) Simulation: 元ゲームの物理/乱数挙動を外部で再現する軽量シミュレータ
-#    ・描画レス&低次元観測でPPOを高速に学習
-# -----------------------------------------------------------------------------
+#    ・描画なし&低次元観測でPPOを高速に学習
+# =================================================================
 @dataclass
 class Cfg:
-    W: int = 800
-    H: int = 600
-    WALLS: int = 80
-    COL_W: int = 10
-    SHIP_H: int = 80
-    G_DOWN: int = 3
-    G_UP: int = -3
-    SLOPE_MIN: int = 1
-    SLOPE_MAX: int = 6
-    HOLE_TOP0: int = 100
-    HOLE_H0: int = 400
-    SHRINK: int = 20
-    FPS: int = 15
+    W = 800            # 画面の幅
+    H = 600            # 画面の高さ
+    WALLS = 80         # 洞窟（横方向の穴データの個数）
+    COL_W = 10         # 通路の幅
+    SHIP_H = 80        # 自機の高さ
+    G_DOWN = 3         # 重力速度
+    G_UP = -3          # 自機上昇速度
+    SLOPE_MIN = 1      # 通路の上下移動量の最小値
+    SLOPE_MAX = 6      # 通路の上下移動量の最大値
+    HOLE_TOP0 = 100    # 通路の上端初期位置
+    HOLE_H0 = 400      # 通路の高さ初期位置
+    SHRINK = 20        # 通路を小さくする量
+    FPS = 15           # フレームレート
 
 class Simulation:
     """
-    ゲーム本体を触らずに “同じ物理” を再現するクラス。
-    - obs(): 学習用の正規化観測ベクトルを返す
-    - step(press_space): 1フレーム進める（元コードと同順序）
+    ゲームを再現するクラス。
+    - reset(): 内部状態を初期化するクラス
+    - obs():  現在のゲーム状態を低次元ベクトルで返す。
+    - step(press_space): 1フレーム進める
     """
     def __init__(self, seed: int = 123, cfg: Cfg = Cfg()):
         self.cfg = cfg
-        # 元コードは Python 標準の randint を使うため、random.Random(seed) で同系列化
+        # 元コードはrandintを使うため、random.Random(seed) で同系列化
         self.rng_py = random.Random(seed)  # 元コードと同じ系列で randint を発生
         self.reset()
 
@@ -158,12 +158,28 @@ class Simulation:
             reward += -1.0
         return self.obs(), float(reward), self.game_over
 
-# -----------------------------------------------------------------------------
+# =====================================================
 # 2) 学習: SimulationをGymnasium環境にラップしてPPOで学習
-# -----------------------------------------------------------------------------
+# =====================================================
 def train(model_path="ppo_cave_key.zip", timesteps=300_000, vec_envs=8, seed=123):
     class CaveEnv(gym.Env):
-        """Simulationを最小限でGym API化。観測/行動は低次元&離散で軽量。"""
+        """
+        Simulationを最小限でGym API化。
+        観測と行動は低次元&離散で軽量化。
+
+        Parameters
+        ----------
+        model_path
+            学習済みモデルの保存先パス
+        timesteps : int
+            総ステップ数
+        vec_envs : int
+            並列環境数（大きいほどサンプル収集が早いがメモリを消費）
+        seed : int
+            乱数シード
+        ------------
+        """
+
         metadata = {}
         def __init__(self):
             super().__init__()
@@ -174,10 +190,12 @@ def train(model_path="ppo_cave_key.zip", timesteps=300_000, vec_envs=8, seed=123
             self.observation_space = spaces.Box(low, high, dtype=np.float32)
             self.max_steps = 4000
             self.steps = 0
+
         def reset(self, seed: Optional[int] = None, options=None):
             self.sim = Simulation(seed=seed if seed is not None else 123)
             self.steps = 0
             return self.sim.reset(), {}
+        
         def step(self, a: int):
             self.steps += 1
             obs, rew, done = self.sim.step(bool(a == 1))
@@ -199,7 +217,7 @@ def train(model_path="ppo_cave_key.zip", timesteps=300_000, vec_envs=8, seed=123
                 n_steps=512, batch_size=1024, gamma=0.995, gae_lambda=0.95,
                 learning_rate=3e-4, n_epochs=10, clip_range=0.2, seed=seed)
 
-    # 早期終了コールバック（評価が伸びなければ止める）
+    # 早期終了
     stop_cb = StopTrainingOnNoModelImprovement(max_no_improvement_evals=10, min_evals=5, verbose=1)
     eval_cb = EvalCallback(eval_env, best_model_save_path="./cave_key_best",
                            log_path="./cave_key_logs", eval_freq=10_000,
@@ -210,14 +228,14 @@ def train(model_path="ppo_cave_key.zip", timesteps=300_000, vec_envs=8, seed=123
     env.close(); eval_env.close()
     print(f"[OK] saved -> {model_path}")
 
-# -----------------------------------------------------------------------------
-# 3) 推論コントローラ: 観測→行動（押す/押さない）を決め、フレーム同期を維持
-# -----------------------------------------------------------------------------
+# ======================================================================
+# 3) 推論コントローラ: 観測から行動（押す/押さない）を決め、フレーム同期を維持
+# ======================================================================
 class RLController:
     def __init__(self, model_path="ppo_cave_key.zip", seed=123):
         from stable_baselines3 import PPO
         self.model = PPO.load(model_path)   # 学習済みPPOをロード
-        self.sim = Simulation(seed=seed)     # シミュレーション
+        self.sim = Simulation(seed=seed)    # シミュレーション
         self.last_action = 0                # 直近の行動（0もしくは1）
 
     def decide(self):
@@ -231,12 +249,12 @@ class RLController:
         # フレーム終了後にシミュレーションを1アクション進め、次フレームを最新化
         self.sim.step(self.last_action == 1)
 
-# -----------------------------------------------------------------------------
+# =============================================================================
 # 4) ゲームを起動し、疑似KEYDOWNで自動プレイ
 #    - pygame.event.get を一時フック: 行動=1 のフレームに KEYDOWN(K_SPACE) を追加
 #    - pygame.display.update を一時フック: 描画後にSimulationを1アクション進め同期
 #    - 規定時間経過で QUIT をポスト
-# -----------------------------------------------------------------------------
+# =============================================================================
 def play_with_keyboard_emulation(game_module="cave_game", seed=123, seconds=60, model_path="ppo_cave_key.zip"):
 
     # 乱数シードを同期
@@ -307,9 +325,9 @@ def play_with_keyboard_emulation(game_module="cave_game", seed=123, seconds=60, 
         except Exception:
             pass
 
-# -----------------------------------------------------------------------------
+# =================================
 # 5) CLI エントリ: 学習 or 自動プレイ
-# -----------------------------------------------------------------------------
+# =================================
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--train", action="store_true", help="PPO学習を実行")
